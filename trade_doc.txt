@@ -1,0 +1,38 @@
+1.To understand how the database should look like,I downloaded some sample datasets from Kaggle,The London stock exchange
+https://www.kaggle.com/gauravmehta13/sp-500-stock-prices
+https://www.londonstockexchange.com/reports?tab=instruments
+The files gave a rough idea on how the database should look like.I did search for sample datasets with actual trade information
+but the attempt was futile.So I created my own sample dataset using Microsoft excel and saved it as a csv file.I was 
+comfortable with csv format rather than the .xlsx f ormat.The sample dataset named DATABASE_main.csv is attached to the repo.
+2.Since I am a novice when it comes to Fastapi and Pydantic I read the documents provided throughly and watched a lot of coding 
+videos regarding the same which was very helpful towards my future steps.
+3.I first created very basic API endpoints as instructed in the videos for better understanding of what type of inputs should
+be given to achieve the desired outputs.I used very basic dictionary values to achieve the same.
+4.The first challenge was to get Python to read the csv file,for some reason th csv package did not download on PyCharm so 
+saved a csv.py file in the same directory and then matched the contents of the file with the Pydantic Base Models.I first 
+tried matching them as dictionaryEG.trades=[Trade(trade_id=1,trader=x['trader'].... but I repeated errors then converted the row 
+data of the csv file into a list of row elements and matched each field of the Pydantic models with the corresponding element of
+the list of row data of row data EG.trade = Trade(trade_id=new_table[0], trader=new_table[1]..... and then used the 
+append() method to save the data.This was defined in a trades() function.
+5.The result of trades() function is stored in result variable which is of type-class List.
+6.Then created the first API endpoint to display the list of trades where a function trade_list() was created and it returned result.
+7.The second endpoint was created using result again,the function unique_trade_id() accepts trade_id as a path parameter and
+returns result[trade_id-1] as the output,since the trade_id begins with 1 and the list index of result begins with 0.
+8.For the third endpoint a function, name_tradelist() was created with accepts a path parameter called name.The 'name' accepts
+counter_party,trader,instrument_id and instrument name as input.To achieve this each row of the result list was accessed using
+a for loop where i is intialised as an integer whose value=trade_id-1.The name parameter is converted to uppercase() since the
+user may perform search using lowercase letters also or use the first letter in uppercase and the rest in lowercase.Then using
+if-elif each of the row element is checked for a match.Previously I used row[counter_party] which threw an error.Then used
+row.counter_party for checking if it matches with the name,if it does the row.trade_id is appended to a data list...I previously
+tried appending the entire row to the data list but could not achieve the desired results.The data list has tradeids of
+every trade that matches with name.EG:KAISER ADOLF is the counter_party in trade_id =4 and the trader in trade_id=17,so by the
+end of the if-elif data list is ['4','17'].We dont know the number of elements in the data list and the elements in the data 
+list as well,using a for loop ,each element of list data is accessed and the value of it is stored in int(i).A variable database 
+is stored with the trade corresponding to data list element and appended to a list called datad.A variabe int(m) is used to store 
+the number of for iterations which give us the number of elements in the data list.Using the if condition the len of data list
+is checked with m,if they are equal then all the elements in data is accounted for and the function returns {name:datad}.
+9.For the fourth endpoint the max and min default values are initialised when declaring the query parameters.Used 
+datetime.strptime() function to convert datetime field to a python readable format which is different from the Pydantic 
+approved format. If the default values are retained,the desired output can be achieved.The assetClass and TradeType query 
+parameters were declared as optional and default values as none.If the user inputs a valid asset_class and/or  buy_sell_indicator
+the trades associated with them would be displayed using a filtered_trades list.
